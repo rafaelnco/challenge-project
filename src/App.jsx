@@ -3,13 +3,24 @@ import React from "react"
 import Logo from "./logo.png"
 import Icon from "./icon.png"
 
+import * as SwiperJS from "swiper/react"
+import * as SwiperModules from "swiper/modules"
+
+import 'swiper/css';
+
 import './App.css';
 
 import styled from "styled-components"
 
+const Modules = {
+  SwiperJS,
+  SwiperModules,
+}
+
 const Base = 10
 
 const Scales = {
+  Zero: 0 * Base,
   Line: 0.1 * Base,
   Thin: 1 * Base,
   Regular: 2 * Base,
@@ -102,6 +113,40 @@ const UI = {
           display: flex;
           flex: 1;
       `,
+    Space: {
+      ...Object.assign({}, ...Object.keys(Scales).map(key => (
+        ({ [key]: styled(View)`
+          padding: ${Scales[key]}px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        ` })
+      ))),
+      Horizontal: {
+        ...Object.assign({}, ...Object.keys(Scales).map(key => (
+          ({
+            [key]: styled(View)`
+        padding-left: ${Scales[key]}px;
+        padding-right: ${Scales[key]}px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    ` })
+        ))),
+      },
+      Vertical: {
+        ...Object.assign({}, ...Object.keys(Scales).map(key => (
+          ({
+            [key]: styled(View)`
+        padding-top: ${Scales[key]}px;
+        padding-bottom: ${Scales[key]}px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    ` })
+        ))),
+      }
+    }
   }
 }
 
@@ -112,17 +157,49 @@ const Components = {
       <UI.View {...props} style={{ maxWidth: "1200px", margin: "auto" }} />
     )
   },
-  Button: (props = {}) => {
+  Button: (propsRaw = {}) => {
+    const { style, ...props } = propsRaw
     return (
-      <UI.Round.Super style={{
-        backgroundColor: "#2b7adf"
-      }}>
-        <UI.Space.Thin style={{ paddingLeft: Scales.Medium, paddingRight: Scales.Medium }}>
-          <UI.Text style={{ color: Palette.White }}>
-            {props.children}
-          </UI.Text>
-        </UI.Space.Thin>
-      </UI.Round.Super>
+      <Kit.UI.View style={{
+        ...style,
+        cursor: "pointer",
+      }} {...props}>
+        <UI.Round.Super style={{
+          backgroundColor: "#2b7adf"
+        }}>
+          <UI.Space.Thin style={{ paddingLeft: Scales.Medium, paddingRight: Scales.Medium }}>
+            <UI.Text style={{ color: Palette.White }}>
+              {props.children}
+            </UI.Text>
+          </UI.Space.Thin>
+        </UI.Round.Super>
+      </Kit.UI.View>
+    )
+  },
+  ButtonBig: (propsRaw = {}) => {
+    const { style, styleHover, onPress, ...props } = propsRaw
+    const Component = styled.div`
+      &:hover {
+        backgroundColor: red;
+      }
+    `
+    return (
+      <Component
+        style={{
+          ...style,
+          cursor: "pointer",
+        }}
+      onClick={onPress} {...props}>
+        <UI.Round.Zero style={{
+          backgroundColor: "#2b7adf"
+        }}>
+          <UI.Space.Regular style={{ paddingLeft: Scales.Medium, paddingRight: Scales.Medium }}>
+            <UI.Typography.Medium.Text style={{ color: Palette.White }}>
+              {props.children}
+            </UI.Typography.Medium.Text>
+          </UI.Space.Regular>
+        </UI.Round.Zero>
+      </Component>
     )
   },
   Table: {
@@ -204,6 +281,7 @@ const Components = {
 const Kit = {
   UI,
   Components,
+  Modules,
 }
 
 function App() {
@@ -283,6 +361,113 @@ function App() {
       },
     ],
   ]
+  const Content = {
+    offers: [
+      {
+        color: "maroon"
+      },
+      {
+        color: "gold"
+      },
+      {
+        color: "teal"
+      },
+    ],
+    planos: [
+      {
+        name: "Plano PJ",
+        priceLast: 240,
+        price: 199,
+        colorSecondary: Palette.White,
+        colorPrimary: Palette.Primary,
+        detail1: "Faturamento Mensal: Ideal até 50 mil*",
+        detail2: "Notas fiscais: até 10 notas/mês",
+        services: [
+          {
+            label: "Abertura Gratuita",
+            icon: "confirm",
+          },
+          {
+            label: "Certificado digital e-CNPJ",
+            icon: "confirm",
+          },
+          {
+            label: "Plataforma com emissor e gestão financeira",
+            icon: "confirm",
+          },
+          {
+            label: "Contabilidade, pró-labore e entrega das obrigações com o governo",
+            icon: "confirm",
+          },
+          {
+            label: "Atendimento WhatsApp, e-mail, telefone e video",
+            icon: "confirm",
+          },
+        ],
+        button: "Comece grátis",
+      },
+      {
+        name: "Plano PJ Plus",
+        priceLast: 320,
+        price: 249,
+        colorSecondary: Palette.Primary,
+        colorPrimary: "#eee",
+        detail1: "Faturamento Mensal: Ideal até 100 mil*",
+        detail2: "Notas fiscais: até 50 notas/mês",
+        services: [
+          {
+            label: "Tudo que contém o Plano PJ",
+            icon: "confirm",
+          },
+          {
+            label: "Entrega do IRPF de 1 sócio(a)",
+            icon: "plus",
+          },
+          {
+            label: "Relatórios contábeis mensais",
+            icon: "plus",
+          },
+          {
+            label: "Multibenefícios (i)",
+            icon: "plus",
+          },
+        ],
+        button: "Comece grátis",
+      },
+      {
+        name: "Plano PJ VIP",
+        priceLast: 500,
+        price: 329,
+        colorSecondary: Palette.Primary,
+        colorPrimary: "#eee",
+        detail1: "Faturamento Mensal: Ideal até 100 mil*",
+        detail2: "Notas fiscais: até 100 notas/mês",
+        services: [
+          {
+            label: "Tudo que contém o Plano PJ e Plus",
+            icon: "confirm",
+          },
+          {
+            label: "Gestão financeira completa (i)",
+            icon: "plus",
+          },
+          {
+            label: "Pró-labore até 2 sócios(as) grátis",
+            icon: "plus",
+          },
+          {
+            label: "Pagamento de contas",
+            icon: "plus",
+          },
+          {
+            label: "Distribuição de lucros",
+            icon: "plus",
+          },
+        ],
+        button: "Comece grátis",
+      },
+    ]
+  }
   return (
     <Kit.Components.Container>
       <Kit.UI.Flex.Center>
@@ -348,6 +533,120 @@ function App() {
           </Kit.Components.Button>
         </Kit.UI.Space.Regular>
       </Kit.UI.Flex.Center>
+      <Kit.UI.Flex.Full>
+
+        <Kit.Modules.SwiperJS.Swiper
+          onSlideChange={() => console.log('slide change')}
+          onSwiper={(swiper) => console.log(swiper)}
+          direction="horizontal"
+          style={{ height: "100%", width: "100%", overflow: "visible" }}
+          breakpoints={{
+            100: {
+              slidesPerView: 1
+            },
+            800: {
+              slidesPerView: 1
+            } 
+          }}
+          scrollbar
+          mousewheel
+          nested
+          //loop
+          grabCursor
+          //freeMode
+          modules={[
+            Kit.Modules.SwiperModules.Scrollbar,
+            Kit.Modules.SwiperModules.Mousewheel,
+            Kit.Modules.SwiperModules.FreeMode,
+            Kit.Modules.SwiperModules.Parallax,
+          ]}
+        >
+          {Content.planos.map((item, index) => (
+            <React.Fragment key={`offer[${index}]`}>
+              <Kit.Modules.SwiperJS.SwiperSlide style={{ display: "flex" }}>
+                
+                <Kit.UI.View style={{
+                  height: "800px",
+                  //backgroundColor: "#eee",
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  }}>
+                  
+                  <Kit.UI.Flex.Space.Regular>
+                    <Kit.UI.View style={{
+                      backgroundColor: item.colorPrimary,
+                      flex: 1,
+                      display: "flex"
+                    }}>
+                      <Kit.UI.Flex.Space.Regular>
+                        <Kit.UI.Flex.Column>
+                          <Kit.UI.Typography.Large.Text style={{ color: item.colorSecondary }}>
+                            {item.name}
+                          </Kit.UI.Typography.Large.Text>
+                          <Kit.UI.Typography.Regular.Text style={{ color: item.colorSecondary }}>
+                            {item.detail1}
+                          </Kit.UI.Typography.Regular.Text>
+                          <Kit.UI.Typography.Regular.Text style={{ color: item.colorSecondary }}>
+                            {item.detail2}
+                          </Kit.UI.Typography.Regular.Text>
+                          <Kit.UI.Flex.Full>
+
+                            <Kit.UI.Flex.Space.Regular>
+                              {item.services.map((itemService, indexService) => (
+                                <React.Fragment key={`services[${index}][${indexService}]`}>
+                                  <Kit.UI.Space.Thin>
+
+                                    <Kit.UI.Round.Zero style={{
+                                      boxShadow: `5px 5px #555`
+                                    }}>
+                                      <Kit.UI.View style={{backgroundColor: item.colorSecondary }}>
+                                        <Kit.UI.Space.Thin>
+
+                                          <Kit.UI.Typography.Regular.Text style={{ color: item.colorPrimary }}>
+                                            {itemService.label}
+                                          </Kit.UI.Typography.Regular.Text>
+                                        </Kit.UI.Space.Thin>
+
+                                      </Kit.UI.View>
+                                    </Kit.UI.Round.Zero>
+                                  </Kit.UI.Space.Thin>
+                                </React.Fragment>
+                              ))}
+                            </Kit.UI.Flex.Space.Regular>
+                          </Kit.UI.Flex.Full>
+                          <Kit.UI.View>
+                            <Kit.UI.Flex.Row>
+                              <Kit.UI.Flex.Center>
+
+                                <Kit.Components.ButtonBig style={{
+                                  boxShadow: `5px 5px #555`
+                                }}
+                                onPress={alert}>
+                                  {item.button}
+                                </Kit.Components.ButtonBig>
+                              </Kit.UI.Flex.Center>
+                              <Kit.UI.Flex.End>
+
+                                <Kit.UI.Typography.Regular.Text style={{ color: item.colorSecondary }}>
+                                  de <span>R${item.priceLast}</span> por <span style={{ fontSize: Scales.Large}}>R${item.price}</span>/mensal
+                                </Kit.UI.Typography.Regular.Text>
+                              </Kit.UI.Flex.End>
+                            </Kit.UI.Flex.Row>
+                          </Kit.UI.View>
+                        </Kit.UI.Flex.Column>
+                      </Kit.UI.Flex.Space.Regular>
+                    </Kit.UI.View>
+                  </Kit.UI.Flex.Space.Regular>
+                  
+                </Kit.UI.View>
+
+              </Kit.Modules.SwiperJS.SwiperSlide>
+            </React.Fragment>
+          ))}
+
+        </Kit.Modules.SwiperJS.Swiper>
+      </Kit.UI.Flex.Full>
     </Kit.Components.Container>
   );
 }
